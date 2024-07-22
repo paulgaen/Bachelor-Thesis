@@ -37,21 +37,46 @@ void addCommunity(Graph& g, uint64_t source, uint64_t destination, std::map<uint
 
     if(s2d > 0 || d2s > 0){
         if (s2d > d2s){
-
-            // check if entire community should move or only one node
-
-            g.setCommunity(static_cast<Node>(mapping[source]), g.getCommunity(static_cast<Node>(mapping[destination])));
+            i(s2d > modularityGainCommunity(g,static_cast<Node>(mapping[source]), g.getCommunity(static_cast<Node>(mapping[destination])),g.getCommunity(static_cast<Node>(mapping[destination])), tot)){
+                g.setCommunity(static_cast<Node>(mapping[source]), g.getCommunity(static_cast<Node>(mapping[destination])));
+            }else{
+                updateEntireCommunity(g,static_cast<Node>(mapping[source]), static_cast<Node>(mapping[destination]));
+            }
         }else{
-
-            // check if entire community should move or only one node
-
-            g.setCommunity(static_cast<Node>(mapping[destination]), g.getCommunity(static_cast<Node>(mapping[source])));
+            i(s2d > modularityGainCommunity(g,static_cast<Node>(mapping[source]), g.getCommunity(static_cast<Node>(mapping[destination])),g.getCommunity(static_cast<Node>(mapping[destination])), tot)){
+                g.setCommunity(static_cast<Node>(mapping[destination]), g.getCommunity(static_cast<Node>(mapping[source])));            
+            }else{
+                updateEntireCommunity(g,static_cast<Node>(mapping[source]), static_cast<Node>(mapping[destination]));
+            }
         }
     }
 }
 
 void deleteCommunity(Graph& g, uint64_t source, uint64_t destination, std::map<uint64_t, uint64_t> mapping, std::map<uint64_t, uint64_t> revMapping){
-
+    if(g.getCommunity(static_cast<Node>(mapping[source])) == g.getCommunity(static_cast<Node>(mapping[destination]))){
+        double s2n, d2n;
+        int swapTo = -1;
+        int max = -1;
+        vector<EdgeWeight> tot = calcTot(g);
+        for(Node n : g.getNeighbors(static_cast<Node>(mapping[source]))){
+            s2n = modularityGain(modularityGain(g, static_cast<Node>(mapping[source]), g.getCommunity(static_cast<Node>(mapping[n])),g.getCommunity(static_cast<Node>(mapping[n])), tot);)
+            if(s2n > max){
+                swapTo = n;
+                max = s2n;
+            }
+        }
+        g.setCommunity(static_cast<Node>(mapping[source],static_cast<Node>(mapping[swapTo]);
+        max = -1;
+        swapTo = -1;
+        for(Node n : g.getNeighbors(static_cast<Node>(mapping[destination]))){
+            s2n = modularityGain(modularityGain(g, static_cast<Node>(mapping[destination]), g.getCommunity(static_cast<Node>(mapping[n])),g.getCommunity(static_cast<Node>(mapping[n])), tot);)
+            if(d2n > max){
+                swapTo = n;
+                max = d2n;
+            }
+        }
+        g.setCommunity(static_cast<Node>(mapping[destination],static_cast<Node>(mapping[swapTo]);
+    }
 }
 
 void copyCommunities(Graph& g, Graph& help){
